@@ -33,12 +33,13 @@ const getMentions = () => {
       console.log('ERROR OCCURED WITH TWIT GET', err);
     }
     data.forEach(tweet => {
-      if (!idStrings[tweet.id_str]) {
+      if (data.length) {
         idStrings[tweet.id_str] = true;
         let tweetObj = {};
         tweetObj.user = tweet.user.screen_name;
         tweetObj.text = tweet.text;
         latestMentions.push(tweetObj);
+        replyToMentions();  
       } else {
         console.log('Twitter Data', data);
       }
@@ -50,4 +51,18 @@ const getMentions = () => {
 
 // getMentions();
 
-
+const replyToMentions = () => {
+  latestMentions.forEach(mention => {
+    let responseTweet = 'Hello @';
+    responseTweet += mention.user;
+    responseTweet += '\n I hope you are having a wonderful day! \n-Your Favorite TwitAir Bot';
+    twit.post('statuses/update', {status: responseTweet}, function (err, tweet, res) {
+      if (err) {
+        console.log('ERROR IN REPLY', err);
+      } 
+      console.log('reply tweet', tweet);
+      console.log('reply resposne', res);
+      console.log('Succesful response,', responseTweet);
+    });
+  });
+};
